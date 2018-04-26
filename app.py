@@ -66,14 +66,15 @@ class App():
         """
         now = time.time()
         self.logger.info("Executing command to start VPN")
-        credentials = "{0}\\n{1}\\ny".format(self.cfg['username'], self.get_password())
+        passwd = self.get_password()
+        credentials = "{0}\\n{1}\\ny".format(self.cfg['username'], passwd)
         printf = subprocess.Popen(['printf', credentials], stdout=subprocess.PIPE)
         vpn = subprocess.Popen("/opt/cisco/anyconnect/bin/vpn -s connect vpn-abg.corp.linkedin.com".split(" "), stdin=printf.stdout, stdout=subprocess.PIPE)
         # for c in iter(lambda: vpn.stdout.read(1), ''):
         #    sys.stdout.write(c)
         stdout, stderr = vpn.communicate()
         # Sanitize stdout
-        stdout.replace(credentials, "PASSWORD_SANITIZED")
+        stdout = stdout.replace(passwd, "PASSWORD_SANITIZED")
 
         elasped = time.time() - now
         self.logger.info("VPN command executed, took: {0}, stdout: {1}, stderr: {2}".format(elasped, stdout, stderr))
