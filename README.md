@@ -31,5 +31,5 @@ Location: ~/.corp_vpn.yaml
 
 ## Build Instructions on Mac
 
-	make app
-	# Built app should be located at: ./dist/AutoVPN.app/Contents/MacOS/AutoVPN
+	make app # Builds app at: ./dist/AutoVPN.app
+	make dmg # Builds dmg at ./AutoVPN.dmg
