@@ -4,6 +4,12 @@ Some companies (like mine) require a concatenation of ldap password and OTP as p
 to VPNs. This is a solution to compute VPN password automatically by getting ldap password from keychain
 and OTP via oathtool. As a bonus, it also makes sure that it retries VPN connection if it fails for some reason.
 
+## Features
+
+* Autoconnects VPN on startup.
+* Keeps checking VPN status every second and reconnects if necessary.
+* Disconnects VPN on exit
+
 ## Screenshots
 
 ### System tray icon
