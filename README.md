@@ -21,7 +21,7 @@ and OTP via oathtool. As a bonus, it also makes sure that it retries VPN connect
 
 Location: ~/.corp_vpn.yaml
 
-	username: arastogi
+	username: my_username
 	OTP_SECRET: SECRET
 
 ## Development
