@@ -159,5 +159,5 @@ if __name__ == "__main__":
     try:
         app = App()
         app.run()
-    except Exception:
-        logging.exception("Some shit happened trying to run app")
+    except Exception as e:
+        logging.exception("Error trying to start application: " + str(e))
