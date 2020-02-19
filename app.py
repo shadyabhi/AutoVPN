@@ -69,7 +69,11 @@ class App():
         passwd = self.get_password()
         credentials = "{0}\\n{1}\\ny".format(self.cfg['username'], passwd)
         printf = subprocess.Popen(['printf', credentials], stdout=subprocess.PIPE)
-        vpn = subprocess.Popen("/opt/cisco/anyconnect/bin/vpn -s connect vpn-abg.corp.linkedin.com".split(" "), stdin=printf.stdout, stdout=subprocess.PIPE)
+
+        # Use VPN endpoint specified in config file
+        # Default to vpn-lca.corp.linkedin.com
+        vpn_address = self.cfg.get('vpn_address', 'vpn-lca.corp.linkedin.com')
+        vpn = subprocess.Popen(("/opt/cisco/anyconnect/bin/vpn -s connect " + vpn_address).split(" "), stdin=printf.stdout, stdout=subprocess.PIPE)
         # for c in iter(lambda: vpn.stdout.read(1), ''):
         #    sys.stdout.write(c)
         stdout, stderr = vpn.communicate()
@@ -94,8 +98,12 @@ class App():
         """
         ret = None
         try:
-            socket.gethostbyname('tools.corp.linkedin.com')
+            vpn_healthcheck_host = self.cfg['vpn_healthcheck_host']
+            socket.gethostbyname(vpn_healthcheck_host)
             ret = True
+        except KeyError:
+            self.logger.fatal("No healtcheck host found in config")
+            ret = False
         except socket.gaierror:
             ret = False
         self.logger.info("VPN status: {0}".format(ret))
