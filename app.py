@@ -34,7 +34,7 @@ class App():
     def parse_config(self):
         cfg_location = os.path.join(os.getenv("HOME"), self.config_path)
         try:
-            self.cfg = yaml.load(open(cfg_location))
+            self.cfg = yaml.safe_load(open(cfg_location))
             self.logger.info("Successfully parsed config file")
         except Exception:
             self.logger.exception("Error loading config file from location: {0}".format(cfg_location))
