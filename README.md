@@ -1,8 +1,10 @@
 # AutoVPN
 
-Some companies (like mine) require a concatenation of ldap password and OTP as password while connecting
-to VPNs. This is a solution to compute VPN password automatically by getting ldap password from keychain
-and OTP via oathtool. As a bonus, it also makes sure that it retries VPN connection if it fails for some reason.
+Some companies (like mine) require a concatenation of LDAP password and OTP as password while connecting
+to VPNs. This is a solution to compute VPN password automatically by getting LDAP password from keychain
+and OTP via [oathtool](https://www.nongnu.org/oath-toolkit/man-oathtool.html). As a bonus, it also makes sure that it retries VPN connection if it fails for some reason.
+
+Don't forget to add a config file with the required values!
 
 ## Features
 
@@ -23,6 +25,8 @@ Location: ~/.corp_vpn.yaml
 
 	username: my_username
 	OTP_SECRET: SECRET
+	vpn_address: <VPN host address>
+	vpn_healthcheck_host: <any private host address>
 
 ## Development
 

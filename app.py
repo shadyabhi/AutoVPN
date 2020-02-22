@@ -34,7 +34,7 @@ class App():
     def parse_config(self):
         cfg_location = os.path.join(os.getenv("HOME"), self.config_path)
         try:
-            self.cfg = yaml.load(open(cfg_location))
+            self.cfg = yaml.safe_load(open(cfg_location))
             self.logger.info("Successfully parsed config file")
         except Exception:
             self.logger.exception("Error loading config file from location: {0}".format(cfg_location))
@@ -69,7 +69,15 @@ class App():
         passwd = self.get_password()
         credentials = "{0}\\n{1}\\ny".format(self.cfg['username'], passwd)
         printf = subprocess.Popen(['printf', credentials], stdout=subprocess.PIPE)
-        vpn = subprocess.Popen("/opt/cisco/anyconnect/bin/vpn -s connect vpn-abg.corp.linkedin.com".split(" "), stdin=printf.stdout, stdout=subprocess.PIPE)
+
+        # Use VPN endpoint specified in config file
+        # Default to vpn-lca.corp.linkedin.com
+        try:
+            vpn_address = self.cfg['vpn_address']
+        except KeyError:
+            self.logger.fatal("No VPN host found in config, check readme for instructions")
+            return False
+        vpn = subprocess.Popen(("/opt/cisco/anyconnect/bin/vpn -s connect " + vpn_address).split(" "), stdin=printf.stdout, stdout=subprocess.PIPE)
         # for c in iter(lambda: vpn.stdout.read(1), ''):
         #    sys.stdout.write(c)
         stdout, stderr = vpn.communicate()
@@ -94,8 +102,12 @@ class App():
         """
         ret = None
         try:
-            socket.gethostbyname('tools.corp.linkedin.com')
+            vpn_healthcheck_host = self.cfg['vpn_healthcheck_host']
+            socket.gethostbyname(vpn_healthcheck_host)
             ret = True
+        except KeyError:
+            self.logger.fatal("No healtcheck host found in config, check readme for instructions")
+            ret = False
         except socket.gaierror:
             ret = False
         self.logger.info("VPN status: {0}".format(ret))
@@ -151,5 +163,5 @@ if __name__ == "__main__":
     try:
         app = App()
         app.run()
-    except Exception:
-        logging.exception("Some shit happened trying to run app")
+    except Exception as e:
+        logging.exception("Error trying to start application: " + str(e))
